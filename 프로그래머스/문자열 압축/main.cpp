@@ -20,25 +20,38 @@ int solution(string s) {
         if(current == compare1){
             sameValue ++;
         }else{
+            //result란 문자열에 최종값을 넣어서 계산하는 방법
+            /*
             if(sameValue == 1){
                 result += current;
             }else {
                 result += (to_string(sameValue) + current);
             }
-            /*
-            output += i ; // add split string size
-            sameValue = (sameValue == 1) ? 0 : (sameValue / 10) + 1;
-            output +=  sameValue; // 크기를 문자열로 나타냈을 때의 길이
             */
+            
+            //최종 결과값만 산출하는 방법
+            sameValue = (sameValue == 1) ? 0 : to_string(sameValue).size();
+            output += i;
+            output += sameValue;
+            
+            //다음 값 계산을 위한 초기화 과정
             current = compare1;
             sameValue = 1;
-        }  
+            }  
         }
-      //  output += sizes % i ;
+        // 나머지 자릿값을 더하는 과정
+        int rest = sizes % i;
+        output += rest;
+        
+        //result란 문자열에 최종값을 넣어서 계산하는 방법
+        /*
         if(sizes / i != 0)
             result += s.substr((sizes/i)*i);
-        if(answer > result.size()) answer = result.size();
-    //   answer = (output < answer) ? output : answer;
+        answer = (result.size() + rest < answer) ? result.size() + rest : answer;
+        */
+        
+        //최종 결과값만 산출하는 방법
+        answer = (output < answer) ? output : answer;
     }
     return answer;
 }
