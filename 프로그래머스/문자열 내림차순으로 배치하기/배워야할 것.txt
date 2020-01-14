@@ -1,0 +1,14 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <functional>
+using namespace std;
+
+string solution(string s) {
+    sort (s.begin(), s.end(), greater<char>());
+    return s;
+}
+
+----------------------------------------------------------
+
+greater 란 것이 무엇인지 공부할 것.
