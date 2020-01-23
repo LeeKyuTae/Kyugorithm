@@ -1,0 +1,25 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int solution(vector<int> citations) {
+    int answer = 0;
+    int standard = 0;
+    sort(citations.begin(), citations.end());
+    int max = citations[citations.size()-1];
+    int min = citations[0];
+    for(int i=citations.size(); i>=0; i--){
+        standard = i;
+        int upper = 0;
+        for(int j=0; j<citations.size(); j++){
+            if(citations[j] >= standard)
+                upper ++;
+        }
+        if(upper >= standard){
+            answer = standard;
+            break;
+        }
+    }
+    return answer;
+}
