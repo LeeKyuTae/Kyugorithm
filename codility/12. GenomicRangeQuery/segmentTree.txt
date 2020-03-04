@@ -1,0 +1,105 @@
+#include <vector>
+#include <iostream>
+#include <math.h>
+
+using namespace std;
+
+struct Node {
+	int segmetTreeIndex;
+	int leftSection;
+	int rightSection;
+
+	Node(int left, int right, int index) {
+		this->segmetTreeIndex = index;
+		this->leftSection = left;
+		this->rightSection = right;
+	}
+};
+
+class SegmentTree {
+
+	const int INF = 987654321;
+
+	int originalArraySize;
+
+	//segmentTree값
+	vector<long long> segmentTrees;
+
+	SegmentTree(const vector<long long> &originalArray) {
+		originalArraySize = originalArray.size();
+
+		//세그먼트 트리의 크기 설정
+		segmentTrees.resize(originalArraySize * 4);
+
+		Node indexNode = makeIndexNode();
+		makeSegmentTree(originalArray, indexNode);
+	}
+
+	long long makeSegmentTree(const vector<long long> &originalArray, Node node) {
+		if (node.leftSection == node.rightSection) {
+			return segmentTrees[node.segmetTreeIndex] = originalArray[node.leftSection];
+		}
+		int mid = (node.leftSection+ node.rightSection) / 2;
+		
+		int index = node.segmetTreeIndex * 2;
+		int leftSection = node.leftSection;
+		int rightSection = mid;
+		Node leftSectionNode(leftSection, rightSection, index);
+		long long leftSectionTree = makeSegmentTree(originalArray, leftSectionNode);
+
+		index = index + 1;
+		leftSection = mid+1;
+		rightSection = node.rightSection;
+		Node rightNode(leftSection, rightSection, index);
+		long long rightSectionTree = makeSegmentTree(originalArray, rightNode);
+
+		// 최소값, 최대값, 구간합 등 문제 조건에 따라 해당 값이 바뀌어야함.
+		segmentTrees[node.segmetTreeIndex] = (leftSectionTree <= rightSectionTree) ? leftSectionTree : rightSectionTree;
+
+		return segmentTrees[node.segmetTreeIndex];
+	}
+
+	long long query(int left, int right) {
+		Node indexNode = makeIndexNode();
+		return query(left, right, indexNode);
+	}
+
+	long long query(int left, int right, Node node) {
+		if (right < node.leftSection || node.rightSection < left) {
+			// 두 구간이 겹치지 않을 경우
+			return INF;
+		}
+		else if (left <= node.leftSection && node.rightSection <= right) {
+			//node의 범위가 구하고자 하는 범위(left,right)에 완전 포함되는 경우
+			return segmentTrees[node.segmetTreeIndex];
+		}
+		else {
+			//아닐경우 구간이 세그먼트 트리에 겹쳐서 존재하므로 추가적으로 구해줘야함
+			int mid = (node.leftSection + node.rightSection) / 2;
+
+			// 최소값, 최대값, 구간합 등 문제 조건에 따라 해당 값이 바뀌어야함.
+			int index = node.segmetTreeIndex * 2;
+			int leftSection = node.leftSection;
+			int rightSection = mid;
+			Node leftSectionNode(leftSection, rightSection, index);
+			long long leftquery = query(left, right, leftSectionNode);
+			index = index + 1;
+			leftSection = mid + 1;
+			rightSection = node.rightSection;
+			Node rightNode(leftSection, rightSection, index);
+			long long rightquery = query(left, right, rightNode);
+			return (leftquery <= rightquery) ? leftquery : rightquery;
+
+		}
+	}
+
+
+	Node makeIndexNode() {
+		int startSection = 0;
+		int endSection = originalArraySize - 1;
+		int startIndex = 1;
+		Node indexNode(startSection, endSection, startIndex);
+		return indexNode;
+	}
+
+};
